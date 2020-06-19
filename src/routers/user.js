@@ -7,12 +7,12 @@ const twilioClient = require('twilio')(config.accountSid, config.authToken);
 const router = express.Router()
 
 function generateOTP(){
-    var n = Math.floor(100000 + Math.random() * 900000)
-    return n.toString();
+    var otp_number = Math.floor(100000 + Math.random() * 900000)
+    return otp_number.toString();
 }
 
 async function sendSMS(number, newOtp){
-    mssg = 'OTP for nitcVote: '+newOtp
+    mssg = 'OTP for NITCVote: '+newOtp
     return twilioClient.messages
     .create({
      body: mssg,
@@ -20,20 +20,6 @@ async function sendSMS(number, newOtp){
      to: number
    })
 }
-
-/***NOT BEING USED*************
-router.post('/users', async (req, res) => {
-    // Create a new user
-    try {
-        const user = new User(req.body)
-        await user.save()
-        const token = await user.generateAuthToken()
-        res.status(201).send({ user, token })
-    } catch (error) {
-        res.status(400).send(error)
-    }
-})
-******************************/
 
 router.post('/users/login', async(req, res) => {
     //Login a registered user
@@ -60,10 +46,8 @@ router.get('/users/me', auth, async(req, res) => {
     res.send(req.user)
 })
 
-router.post('/users/me/sendOTP', auth, async (req, res) => {
-    // Log user out of the application
+router.get('/users/me/sendOTP', auth, async (req, res) => {
     try {
-
         var val = generateOTP()
         var mobile = req.user.mobile
         var mssg = await sendSMS(mobile, val)
@@ -76,7 +60,6 @@ router.post('/users/me/sendOTP', auth, async (req, res) => {
         req.user.otp = val
         req.user.otpStartTime= time
         await req.user.save()
-        //res.send({otp: val, sid: mssg.sid, time: time})
 		res.send()
     } catch (error) {
         res.status(500).send(error)
@@ -84,7 +67,6 @@ router.post('/users/me/sendOTP', auth, async (req, res) => {
 })
 
 router.post('/users/me/verifyOTP', auth, async (req, res) => {
-    // Log user out of the application
     try {
         const {otpInp, ethAcctInp } = req.body
 
@@ -102,7 +84,6 @@ router.post('/users/me/verifyOTP', auth, async (req, res) => {
 
         req.user.ethAcct = ethAcctInp
         await req.user.save()
-        //res.send({userDetails: req.user, startTime: startTime, endTime: endTime, currTime: time})
         res.send()
 
     } catch (error) {
