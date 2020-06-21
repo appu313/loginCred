@@ -2,6 +2,7 @@ const express = require('express')
 const User = require('../models/User')
 const auth = require('../middleware/auth')
 const config = require('../../config.json')
+const Register = require('../chain/register')
 
 const router = express.Router()
 
@@ -51,16 +52,14 @@ router.get('/users/me', auth, async(req, res) => {
 
 router.get('/users/me/sendOTP', auth, async (req, res) => {
     try {
-        var val = generateOTP()
+        var otp = generateOTP()
         var mobile = req.user.mobile
-        var mssg = await sendSMS(mobile, val)
+        var mssg = await sendSMS(mobile, otp)
 
-        //int time = 
         var d = new Date();
         var time = d.getTime();
-        
 
-        req.user.otp = val
+        req.user.otp = otp
         req.user.otpStartTime= time
         await req.user.save()
 		res.send()
@@ -71,23 +70,24 @@ router.get('/users/me/sendOTP', auth, async (req, res) => {
 
 router.post('/users/me/verifyOTP', auth, async (req, res) => {
     try {
-        const { otpInp, ethAcctInp } = req.body
+        const { otpInp, ethAcctInp, electionId } = req.body
 
         var d = new Date();
         var time = d.getTime();
         startTime = parseInt(req.user.otpStartTime)
         endTime = startTime+180000
+        var otp = req.user.otp
+        req.user.otp = null;
+        await req.user.save();
         //3 min= 3*60*1000
         if(time > endTime)
-            return res.status(401).send({error: 'Time exceeded for otp verification'})
+            return res.status(401).send({error: 'Time exceeded for OTP verification'})
 
-        var otp = req.user.otp
         if(otp != otpInp)
-            return res.status(401).send({error: 'Invalid otp', actOtp: otp, inputOtp: otpInp})
+            return res.status(401).send({error: 'Incorrect OTP', inputOtp: otpInp})
 
-        req.user.ethAcct = ethAcctInp
-        await req.user.save()
-        res.send()
+        await Register(electionId, ethAcctInp);
+        res.send();
 
     } catch (error) {
         res.status(500).send(error)

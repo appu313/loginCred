@@ -5,5 +5,7 @@
 	"PORT": 8000,
 	"accountSid": "ur accountSid",
 	"authToken": "ur authToken",
-    "twilioNumber": "+12054985785"
+    "twilioNumber": "+12054985785",
+    "RPC_URL": "HTTP-RPC URL of node",
+    "REG_PRIVATE_KEY": "Reg Authority private key"
 }
