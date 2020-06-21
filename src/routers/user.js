@@ -3,7 +3,6 @@ const User = require('../models/User')
 const auth = require('../middleware/auth')
 const config = require('../../config.json')
 
-const twilioClient = require('twilio')(config.accountSid, config.authToken);
 const router = express.Router()
 
 function generateOTP(){
@@ -12,11 +11,12 @@ function generateOTP(){
 }
 
 async function sendSMS(number, newOtp){
-    mssg = 'OTP for NITCVote: '+newOtp
+    const twilioClient = require('twilio')(config.accountSid, config.authToken);
+    mssg = 'OTP for NITCVote: ' + newOtp;
     return twilioClient.messages
     .create({
      body: mssg,
-     from: '+12054985785',
+     from: config.twilioNumber,
      to: number
    })
 }
@@ -27,14 +27,17 @@ router.post('/users/login', async(req, res) => {
         const { email, password } = req.body
         const user = await User.findByCredentials(email, password)
         if (user == -1) {
-            return res.status(401).send({error: 'Login failed! Invalid email'})
+            return res.status(401).send({error: 'Login failed! Invalid email or password'})
         }
         if (user == -2) {
-            return res.status(401).send({error: 'Login failed! Invalid password'})
+            return res.status(401).send({error: 'Login fail'})
         }
         const token = await user.generateAuthToken()
-        //res.send({ user, token })
-        res.send(token)
+        response = {
+            token,
+            user: user.first_name + " " + user.last_name
+        }
+        res.send(response)
     } catch (err) {
         res.status(400).send({error: "Authentication error"})
     }
@@ -68,7 +71,7 @@ router.get('/users/me/sendOTP', auth, async (req, res) => {
 
 router.post('/users/me/verifyOTP', auth, async (req, res) => {
     try {
-        const {otpInp, ethAcctInp } = req.body
+        const { otpInp, ethAcctInp } = req.body
 
         var d = new Date();
         var time = d.getTime();
@@ -115,5 +118,13 @@ router.post('/users/me/logoutall', auth, async(req, res) => {
     }
 })
 
+router.get('/users/me/eligible', auth, async(req, res) => {
+    eligible_elections = req.user.eligible_elections
+    var response = [];
+    for (i in eligible_elections) {
+        response.push(eligible_elections[i].id);
+    }
+    res.send(response)
+})
 
 module.exports = router

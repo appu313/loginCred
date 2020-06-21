@@ -2,7 +2,8 @@
 
 	"MONGODB_URL": "mongodb://localhost:27017/ElecCommDB",
 	"JWT_KEY": "WinterIsComingGOT2019",
-	"PORT": 3000,
+	"PORT": 8000,
 	"accountSid": "ur accountSid",
-	"authToken": "ur authToken"
+	"authToken": "ur authToken",
+    "twilioNumber": "+12054985785"
 }
