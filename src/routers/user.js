@@ -87,6 +87,11 @@ router.post('/users/me/verifyOTP', auth, async (req, res) => {
             return res.status(401).send({error: 'Incorrect OTP', inputOtp: otpInp})
 
         await Register(electionId, ethAcctInp);
+        req.user.eligible_elections = req.user.eligible_elections.map((election, idx) => {
+            if (election.id !== electionId) return election;
+            else {election.submitted = true; return election;}
+        })
+        await req.user.save();
         res.send();
 
     } catch (error) {
