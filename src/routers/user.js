@@ -94,7 +94,7 @@ router.post('/users/me/verifyOTP', auth, async (req, res) => {
     }
 })
 
-router.post('/users/me/logout', auth, async (req, res) => {
+router.get('/users/me/logout', auth, async (req, res) => {
     // Log user out of the application
     try {
         req.user.tokens = req.user.tokens.filter((token) => {
@@ -107,7 +107,7 @@ router.post('/users/me/logout', auth, async (req, res) => {
     }
 })
 
-router.post('/users/me/logoutall', auth, async(req, res) => {
+router.get('/users/me/logoutall', auth, async(req, res) => {
     // Log user out of all devices
     try {
         req.user.tokens.splice(0, req.user.tokens.length)
