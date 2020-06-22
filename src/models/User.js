@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const config = require('../../config.json')
 
 const userSchema = mongoose.Schema({first_name: String, last_name: String, mobile: String, email: String, password: String, 
-    tokens:[{token: String}], eligible_elections: [{id : String, submitted: Boolean}], otp: String, otpStartTime: String });
+    tokens:[{token: String}], eligible_elections: [{id : String, submitted: Boolean}], otp: String, otpStartTime: String, admin: Boolean });
 
 userSchema.methods.generateAuthToken = async function() {
     // Generate an auth token for the user

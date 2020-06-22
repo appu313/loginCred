@@ -1,8 +1,9 @@
 const express = require('express')
 const User = require('../models/User')
-const auth = require('../middleware/auth')
+const { auth, admin } = require('../middleware/auth')
 const config = require('../../config.json')
 const Register = require('../chain/register')
+const shamirShare = require('../shamir')
 
 const router = express.Router()
 
@@ -124,12 +125,11 @@ router.get('/users/me/logoutall', auth, async(req, res) => {
 })
 
 router.get('/users/me/eligible', auth, async(req, res) => {
-    eligible_elections = req.user.eligible_elections
-    var response = [];
-    for (i in eligible_elections) {
-        response.push(eligible_elections[i].id);
-    }
-    res.send(response)
+    res.send(req.user.eligible_elections)
+})
+
+router.post('/shamirshare', auth, admin, async(req, res) => {
+    res.send(shamirShare(req.body.emails));
 })
 
 module.exports = router

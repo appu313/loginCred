@@ -18,4 +18,17 @@ const auth = async(req, res, next) => {
     }
 
 }
-module.exports = auth
+
+const admin = async(req, res, next) => {
+    try {
+        if (!req.user.admin) {
+            throw new Error();
+        }
+        next();
+    } catch (error) {
+        res.status(401).send({ error: 'Invalid token: Not authorized to access this resource' })
+    }
+
+}
+
+module.exports = { auth, admin }

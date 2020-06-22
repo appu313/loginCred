@@ -6,6 +6,10 @@
 	"accountSid": "ur accountSid",
 	"authToken": "ur authToken",
     "twilioNumber": "+12054985785",
-    "RPC_URL": "HTTP-RPC URL of node",
-    "REG_PRIVATE_KEY": "Reg Authority private key"
+    "RPC_URL": "http://localhost:7545",
+    "REG_PRIVATE_KEY": "",
+    "SMTP_HOST": "smtp.gmail.com",
+    "SMTP_PORT": 587,
+    "SMTP_USER": "email@email.com",
+    "SMTP_PASS": ""
 }
