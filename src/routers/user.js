@@ -4,7 +4,7 @@ const { auth, admin } = require('../middleware/auth')
 const config = require('../../config.json')
 const Register = require('../chain/register')
 const shamirShare = require('../shamir')
-
+var multer  = require('multer')
 const router = express.Router()
 
 function generateOTP(){
@@ -131,5 +131,33 @@ router.get('/users/me/eligible', auth, async(req, res) => {
 router.post('/shamirshare', auth, admin, async(req, res) => {
     res.send(shamirShare(req.body.emails));
 })
+
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '/home/reema/Downloads/finalV3')
+  },
+  filename: function (req, file, cb) {
+   //const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, file.originalname)
+  }
+})
+
+var upload = multer({ storage: storage })
+
+
+
+//var upload = multer({ dest: '/home/reema/Downloads/finalV3' })
+router.post('/users/me/registerusers',upload.single('file'), async (req, res) => {
+
+   // req.file is the name of your file in the form above, here 'uploaded_file'
+   // req.body will hold the text fields, if there were any 
+   const {electionId}=req.body
+   console.log(req.filename,req.body)
+   console.log(electionId)
+
+    
+});
+
 
 module.exports = router
