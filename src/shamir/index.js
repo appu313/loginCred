@@ -4,15 +4,18 @@ const nodemailer = require("nodemailer");
 const config = require("../../config.json")
 
 async function sendmail(email, content) {
-    let transporter = nodemailer.createTransport({
+    options= {
         host: config.SMTP_HOST,
         port: config.SMTP_PORT,
-        secure: false,
+        secure: false
+    };
+    if (config.SMTP_AUTH) {
         auth: {
             user: config.SMTP_USER,
             pass: config.SMTP_PASS
         }
-    });
+    }
+    let transporter = nodemailer.createTransport(options);
 
     let info = await transporter.sendMail({
         from: "Elections Bot <noreply@nitcvote.com>",
