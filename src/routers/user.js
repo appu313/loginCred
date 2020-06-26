@@ -54,10 +54,12 @@ router.post('/users/login', async(req, res) => {
 	    await user.save()
         }
         const token = await user.generateAuthToken()
+	const imageLink = payload['picture'] ? payload['picture']
+		    : "http://africajurists.org/wp-content/uploads/2015/03/empty_avatar.jpg";
         response = {
             token,
             user: user.first_name + " " + user.last_name,
-            pic: payload['picture']
+            pic: imageLink
         }
         res.send(response)
     } catch (err) {
@@ -152,10 +154,9 @@ router.post('/shamirshare', auth, admin, async(req, res) => {
     res.send(shamirShare(req.body.emails));
 })
 
-
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, '/home/reema/Downloads/finalV3')
+    cb(null, 'uploads')
   },
   filename: function (req, file, cb) {
    //const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
@@ -165,10 +166,8 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage })
 
-
-
 //var upload = multer({ dest: '/home/reema/Downloads/finalV3' })
-router.post('/users/me/registerusers',upload.single('file'), async (req, res) => {
+router.post('/users/me/registerusers', upload.single('file'), async (req, res) => {
 
    // req.file is the name of your file in the form above, here 'uploaded_file'
    // req.body will hold the text fields, if there were any 
@@ -176,7 +175,6 @@ router.post('/users/me/registerusers',upload.single('file'), async (req, res) =>
    console.log(req.filename,req.body)
    console.log(electionId)
 
-    
 });
 
 
