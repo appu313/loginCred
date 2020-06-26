@@ -5,7 +5,10 @@ const config = require('../../config.json')
 const Register = require('../chain/register')
 const shamirShare = require('../shamir')
 var multer  = require('multer')
+const {OAuth2Client} = require('google-auth-library');
+
 const router = express.Router()
+const client = new OAuth2Client("887688664674-jqpj4g1ap81heko2lcchg79venfitm52.apps.googleusercontent.com");
 
 function generateOTP(){
     var otp_number = Math.floor(100000 + Math.random() * 900000)
@@ -23,21 +26,38 @@ async function sendSMS(number, newOtp){
    })
 }
 
+async function verify(token) {
+  const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: "887688664674-jqpj4g1ap81heko2lcchg79venfitm52.apps.googleusercontent.com"
+  });
+  const payload = ticket.getPayload();
+  if(payload['hd'] !== "nitc.ac.in") throw new Error();
+  return payload;
+}
+
+
 router.post('/users/login', async(req, res) => {
     //Login a registered user
     try {
-        const { email, password } = req.body
-        const user = await User.findByCredentials(email, password)
+        const { id_token } = req.body
+        const payload = await verify(id_token)
+        var user = await User.findByEmail(payload['email'])
         if (user == -1) {
+            user = new User({
+                email: payload['email'],
+                first_name: payload['given_name'],
+                last_name: payload['family_name'],
+                tokens: [],
+                eligible_elections: []
+            })
             return res.status(401).send({error: 'Login failed! Invalid email or password'})
-        }
-        if (user == -2) {
-            return res.status(401).send({error: 'Login fail'})
         }
         const token = await user.generateAuthToken()
         response = {
             token,
-            user: user.first_name + " " + user.last_name
+            user: user.first_name + " " + user.last_name,
+            pic: payload['picture']
         }
         res.send(response)
     } catch (err) {

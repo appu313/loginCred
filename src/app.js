@@ -1,6 +1,5 @@
 const express = require('express')
 const userRouter = require('./routers/user')
-
 const config = require('../config.json')
 const port = config.PORT
 require('./db/db')

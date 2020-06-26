@@ -16,15 +16,11 @@ userSchema.methods.generateAuthToken = async function() {
     return token
 }
 
-userSchema.statics.findByCredentials = async (email, password) => {
+userSchema.statics.findByEmail = async (email) => {
     // Search for a user by email and password.
     const user = await User.findOne({ email } );
     if (!user) {
         return -1;
-    }
-    const isPasswordMatch = await bcrypt.compare(password, user.password)
-    if (!isPasswordMatch) {
-        return -2;
     }
     return user
 }
