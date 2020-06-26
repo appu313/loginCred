@@ -51,7 +51,7 @@ router.post('/users/login', async(req, res) => {
                 tokens: [],
                 eligible_elections: []
             })
-            return res.status(401).send({error: 'Login failed! Invalid email or password'})
+	    await user.save()
         }
         const token = await user.generateAuthToken()
         response = {

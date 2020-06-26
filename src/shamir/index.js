@@ -10,7 +10,7 @@ async function sendmail(email, content) {
         secure: false
     };
     if (config.SMTP_AUTH) {
-        auth: {
+        options.auth = {
             user: config.SMTP_USER,
             pass: config.SMTP_PASS
         }
